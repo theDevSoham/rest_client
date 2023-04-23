@@ -13,6 +13,7 @@ type RequestCardProps = {
 const RequestCard: Component<RequestCardProps> = (props) => {
   const toggleSelection = () => {
     setSelected(props.ind);
+	props.onFocused(props.ind);
   };
 
   return (
