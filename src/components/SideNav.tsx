@@ -1,13 +1,18 @@
+/* eslint-disable no-unused-vars */
 import { Component, For } from "solid-js";
 import RequestCard from "./RequestCard";
 import { requests, setRequests } from "../states";
 import AddIcon from "../assets/svgs/AddIcon";
 import { IRestRequest } from "../interfaces/rest.requests";
 
-const SideNav: Component<{}> = () => {
+type SideNavProps = {
+  onFocused: (index: number) => void;
+};
+
+const SideNav: Component<SideNavProps> = (props) => {
 
   const getCurrentIndex = (index: number) => {
-    console.log(index);
+    props.onFocused(index);
   };
 
   const addRequest = () => {
