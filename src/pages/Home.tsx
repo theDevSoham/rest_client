@@ -1,10 +1,9 @@
-import { Component, createSignal } from "solid-js";
+import { Component } from "solid-js";
 import SideNav from "../components/SideNav";
 import RequestForm from "../components/RequestForm";
+import { currentId, setCurrentId } from "../states";
 
 const Home: Component<{}> = () => {
-
-  const [currentId, setCurrentId] = createSignal(0);
 
   const getId = (id: number) => {
     setCurrentId(id);
