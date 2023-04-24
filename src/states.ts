@@ -26,8 +26,8 @@ const [requests, setRequests] = createSignal<IRestRequest[]>([
   },
 ]);
 
-const [selected, setSelected] = createSignal(0);
-const [methods] = createSignal(["GET", "POST", "PUT", "DELETE"]);
-const [currentId, setCurrentId] = createSignal(0);
+const [selected, setSelected] = createSignal<number>(0);
+const [methods] = createSignal<string[]>(["GET", "POST", "PUT", "DELETE"]);
+const [currentId, setCurrentId] = createSignal<number>(0);
 
 export { requests, setRequests, setSelected, selected, methods, currentId, setCurrentId };

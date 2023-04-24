@@ -1,9 +1,10 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable no-mixed-spaces-and-tabs */
-import { Component } from "solid-js";
+import { Component, createSignal } from "solid-js";
 import { IRestRequest } from "../interfaces/rest.requests";
-import { selected, setRequests, setSelected } from "../states";
+import { requests, selected, setRequests, setSelected } from "../states";
 import DelIcon from "../assets/svgs/DelIcon";
+import DeleteAlert from "../pages/DeleteAlert";
 
 type RequestCardProps = {
   request: IRestRequest;
@@ -12,16 +13,26 @@ type RequestCardProps = {
 };
 
 const RequestCard: Component<RequestCardProps> = (props) => {
+  const [toggleDelete, setToggleDelete] = createSignal<boolean>(false);
+
   const toggleSelection = () => {
     setSelected(props.ind);
     props.onFocused(props.ind);
   };
 
-  const delRequest = (index: number) => {
-    if (confirm("Are you sure you want to delete this request?")) {
+  const delRequest = () => {
+    setToggleDelete(true);
+  };
+
+  const deleteRequest = (prompt: boolean, index: number) => {
+    setToggleDelete(false);
+    if (prompt && requests().length > 1) {
       setRequests((prev) => {
         return prev.filter((_, i) => i !== index);
       });
+    } else {
+      alert("You can't delete the last request");
+      return;
     }
   };
 
@@ -55,9 +66,22 @@ const RequestCard: Component<RequestCardProps> = (props) => {
       </p>
 
       <div class="absolute right-0 bottom-0 w-10 h-full flex justify-center items-center z-10">
-        <button class="mb-5" onClick={() => delRequest(props.ind)}>
+        <button class="mb-5" onClick={() => delRequest()}>
           <DelIcon />
         </button>
+        {toggleDelete() && (
+          <DeleteAlert
+            toDelete={props.ind}
+            onChoose={deleteRequest}
+            body={{
+              topic: "Delete Request",
+              message:
+                "Are you sure you want to delete this Request? This action cannot be undone.",
+              confirmOption: "Delete",
+              rejectionOption: "Cancel",
+            }}
+          />
+        )}
       </div>
     </div>
   );

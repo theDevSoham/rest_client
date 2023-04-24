@@ -1,15 +1,23 @@
 /* eslint-disable solid/reactivity */
 /* eslint-disable no-mixed-spaces-and-tabs */
-import { Component, For, Show } from "solid-js";
+import { Component, For, Show, createEffect, createSignal } from "solid-js";
 import { methods, requests, setRequests } from "../states";
 import AddIcon from "../assets/svgs/AddIcon";
 import DelIcon from "../assets/svgs/DelIcon";
+import DeleteAlert from "../pages/DeleteAlert";
 
 type RequestFormProps = {
   currentId: number;
 };
 
+type ChangeType = "name" | "url" | "key" | "value" | "method" | "body";
+
+type HeaderIndex<T extends ChangeType> = T extends "key" | "value" ? number : undefined;
+
 const RequestForm: Component<RequestFormProps> = (props) => {
+
+	  const [showDelAlert, setShowDelAlert] = createSignal<boolean>(false);
+
   const addHeaders = (e: Event): void => {
     e.preventDefault();
     setRequests((prev) =>
@@ -34,25 +42,71 @@ const RequestForm: Component<RequestFormProps> = (props) => {
     );
   };
 
-  const delHeader = (e: Event, index: number): void => {
+  const reqDeleteHeader = (e: Event): void => {
     e.preventDefault();
-    setRequests((prev) =>
-      prev.map((item, i) => {
-        if (i === props.currentId) {
-          const newItem = {
-            ...item,
-            request: {
-              ...item.request,
-              headers: item.request.headers?.filter((_, i) => i !== index),
-            },
-          };
-          return newItem;
-        }
-
-        return item;
-      })
-    );
+	setShowDelAlert(true);
   };
+
+  const getChoice = (choice:boolean, index:number): void => {
+	setShowDelAlert(false);
+
+	if(choice){
+		setRequests((prev) =>
+		prev.map((item, i) => {
+		  if (i === props.currentId) {
+			const newItem = {
+			  ...item,
+			  request: {
+				...item.request,
+				headers: item.request.headers?.filter((_, i) => i !== index),
+			  },
+			};
+			return newItem;
+		  }
+  
+		  return item;
+		})
+	  );
+	}else{
+		return;
+	}
+  };
+
+  const changeRequest = (e: Event, type: ChangeType, id: HeaderIndex<ChangeType>): void => {
+	const target = e.target as HTMLInputElement;
+	setRequests((prev) =>
+	  prev.map((item, i) => {
+		if (i === props.currentId) {
+		  const newItem = {
+			...item,
+			name: type === "name"? target.value:item.name,
+			request: {
+				...item.request,
+				url: type === "url"? target.value:item.request.url,
+				method: type === "method"? target.value:item.request.method,
+				body: type === "body"? target.value:item.request.body,
+				headers: item.request.headers?.map((header, i) => {
+					if(i === id){
+						return {
+							key: type === "key"? target.value:header.key,
+							value: type === "value"? target.value:header.value
+						}
+					}
+					return header;
+				})
+			},
+		  };
+		  return newItem;
+		}
+
+		return item;
+	  })
+	);
+  };
+
+  createEffect(() => {
+	console.log(requests());
+  });
 
   return (
     <div class="w-full h-full p-2 flex flex-wrap justify-between items-center">
@@ -75,6 +129,7 @@ const RequestForm: Component<RequestFormProps> = (props) => {
                   placeholder="Request"
                   required
                   value={requests()[props.currentId].name}
+				  onChange={(e:Event) => changeRequest(e, "name", undefined)}
                 />
               </div>
 
@@ -92,6 +147,7 @@ const RequestForm: Component<RequestFormProps> = (props) => {
                   placeholder="URL"
                   required
                   value={requests()[props.currentId].request.url}
+				  onChange={(e:Event) => changeRequest(e, "url", undefined)}
                 />
               </div>
 
@@ -110,7 +166,7 @@ const RequestForm: Component<RequestFormProps> = (props) => {
                 </div>
 
                 <Show
-                  when={requests()[props.currentId].request.headers && requests()[props.currentId].request.headers.length > 0}
+                  when={requests().length>0 && requests()[props.currentId].request.headers && requests()[props.currentId].request.headers.length > 0}
                   fallback="No headers"
                 >
                   <For each={requests()[props.currentId].request.headers}>
@@ -131,6 +187,7 @@ const RequestForm: Component<RequestFormProps> = (props) => {
                               placeholder="Enter Key"
                               required
                               value={header.key}
+							  onChange={(e:Event) => changeRequest(e, "key", i())}
                             />
                           </div>
                           <div>
@@ -147,12 +204,19 @@ const RequestForm: Component<RequestFormProps> = (props) => {
                               placeholder="Enter value"
                               required
                               value={header.value}
+							  onChange={(e:Event) => changeRequest(e, "value", i())}
                             />
                           </div>
                           <div>
-                            <button onClick={(e: Event) => delHeader(e, i())}>
+                            <button onClick={(e: Event) => reqDeleteHeader(e)}>
                               <DelIcon />
                             </button>
+							{showDelAlert() && <DeleteAlert toDelete={i()} onChoose={getChoice} body={{
+								topic: "Delete Header",
+								message: "Are you sure you want to delete this header? This action cannot be undone.",
+								confirmOption: "Delete",
+								rejectionOption: "Cancel"
+							}} />}
                           </div>
                         </div>
                       );
@@ -171,6 +235,7 @@ const RequestForm: Component<RequestFormProps> = (props) => {
                 <select
                   id="methods"
                   class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+				  onChange={(e:Event) => changeRequest(e, "method", undefined)}
                 >
                   <For each={methods()}>
                     {(method) => {
@@ -203,6 +268,7 @@ const RequestForm: Component<RequestFormProps> = (props) => {
                   class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                   placeholder="Body"
 				  value={requests()[props.currentId].request.body === undefined ? "" : requests()[props.currentId].request.body}
+				  onChange={(e:Event) => changeRequest(e, "body", undefined)}
                 />
               </div>}
             </form>
