@@ -12,11 +12,12 @@ type RequestFormProps = {
 
 type ChangeType = "name" | "url" | "key" | "value" | "method" | "body";
 
-type HeaderIndex<T extends ChangeType> = T extends "key" | "value" ? number : undefined;
+type HeaderIndex<T extends ChangeType> = T extends "key" | "value"
+  ? number
+  : undefined;
 
 const RequestForm: Component<RequestFormProps> = (props) => {
-
-	  const [showDelAlert, setShowDelAlert] = createSignal<boolean>(false);
+  const [showDelAlert, setShowDelAlert] = createSignal<boolean>(false);
 
   const addHeaders = (e: Event): void => {
     e.preventDefault();
@@ -26,9 +27,9 @@ const RequestForm: Component<RequestFormProps> = (props) => {
           const newItem = {
             ...item,
             request: {
-              ...item.request,
+              ...item?.request,
               headers:
-                item.request.headers !== undefined
+                item?.request.headers !== undefined
                   ? [...item.request.headers, { key: "", value: "" }]
                   : [{ key: "", value: "" }],
             },
@@ -44,68 +45,72 @@ const RequestForm: Component<RequestFormProps> = (props) => {
 
   const reqDeleteHeader = (e: Event): void => {
     e.preventDefault();
-	setShowDelAlert(true);
+    setShowDelAlert(true);
   };
 
-  const getChoice = (choice:boolean, index:number): void => {
-	setShowDelAlert(false);
+  const getChoice = (choice: boolean, index: number): void => {
+    setShowDelAlert(false);
 
-	if(choice){
-		setRequests((prev) =>
-		prev.map((item, i) => {
-		  if (i === props.currentId) {
-			const newItem = {
-			  ...item,
-			  request: {
-				...item.request,
-				headers: item.request.headers?.filter((_, i) => i !== index),
-			  },
-			};
-			return newItem;
-		  }
-  
-		  return item;
-		})
-	  );
-	}else{
-		return;
-	}
+    if (choice) {
+      setRequests((prev) =>
+        prev.map((item, i) => {
+          if (i === props.currentId) {
+            const newItem = {
+              ...item,
+              request: {
+                ...item?.request,
+                headers: item?.request.headers?.filter((_, i) => i !== index),
+              },
+            };
+            return newItem;
+          }
+
+          return item;
+        })
+      );
+    } else {
+      return;
+    }
   };
 
-  const changeRequest = (e: Event, type: ChangeType, id: HeaderIndex<ChangeType>): void => {
-	const target = e.target as HTMLInputElement;
-	setRequests((prev) =>
-	  prev.map((item, i) => {
-		if (i === props.currentId) {
-		  const newItem = {
-			...item,
-			name: type === "name"? target.value:item.name,
-			request: {
-				...item.request,
-				url: type === "url"? target.value:item.request.url,
-				method: type === "method"? target.value:item.request.method,
-				body: type === "body"? target.value:item.request.body,
-				headers: item.request.headers?.map((header, i) => {
-					if(i === id){
-						return {
-							key: type === "key"? target.value:header.key,
-							value: type === "value"? target.value:header.value
-						}
-					}
-					return header;
-				})
-			},
-		  };
-		  return newItem;
-		}
+  const changeRequest = (
+    e: Event,
+    type: ChangeType,
+    id: HeaderIndex<ChangeType>
+  ): void => {
+    const target = e.target as HTMLInputElement;
+    setRequests((prev) =>
+      prev.map((item, i) => {
+        if (i === props.currentId) {
+          const newItem = {
+            ...item,
+            name: type === "name" ? target.value : item?.name,
+            request: {
+              ...item?.request,
+              url: type === "url" ? target.value : item?.request.url,
+              method: type === "method" ? target.value : item?.request.method,
+              body: type === "body" ? target.value : item?.request.body,
+              headers: item?.request.headers?.map((header, i) => {
+                if (i === id) {
+                  return {
+                    key: type === "key" ? target.value : header.key,
+                    value: type === "value" ? target.value : header.value,
+                  };
+                }
+                return header;
+              }),
+            },
+          };
+          return newItem;
+        }
 
-		return item;
-	  })
-	);
+        return item;
+      })
+    );
   };
 
   createEffect(() => {
-	console.log(requests());
+    console.log(requests());
   });
 
   return (
@@ -114,164 +119,194 @@ const RequestForm: Component<RequestFormProps> = (props) => {
         <div class="w-full h-full bg-neutral-300 rounded-lg shadow-lg p-3 overflow-auto">
           <h1 class="text-2xl font-semibold">Request</h1>
           <div class="flex flex-row-reverse justify-between items-center">
-            <form class="w-full h-full p-4">
-              <div class="mb-4 mt-2">
-                <label
-                  for="name"
-                  class="block mb-2 text-lg font-medium text-black-900 dark:text-white"
-                >
-                  Name of Request
-                </label>
-                <input
-                  type="text"
-                  id="name"
-                  class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                  placeholder="Request"
-                  required
-                  value={requests()[props.currentId].name}
-				  onChange={(e:Event) => changeRequest(e, "name", undefined)}
-                />
-              </div>
-
-              <div class="mb-4 mt-2">
-                <label
-                  for="url"
-                  class="block mb-2 text-lg font-medium text-black-900 dark:text-white"
-                >
-                  URL
-                </label>
-                <input
-                  type="text"
-                  id="url"
-                  class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                  placeholder="URL"
-                  required
-                  value={requests()[props.currentId].request.url}
-				  onChange={(e:Event) => changeRequest(e, "url", undefined)}
-                />
-              </div>
-
-              <div class="mt-6 mb-4">
-                <div class="flex justify-between items-center">
+            <Show when={requests()[props.currentId]?.name !== undefined} fallback="No request selected">
+              <form class="w-full h-full p-4">
+                <div class="mb-4 mt-2">
                   <label
-                    for="first_name"
-                    class="block mb-2 text-lg font-medium text-gray-900 dark:text-white"
+                    for="name"
+                    class="block mb-2 text-lg font-medium text-black-900 dark:text-white"
                   >
-                    Headers
+                    Name of Request
                   </label>
-
-                  <button onClick={addHeaders}>
-                    <AddIcon />
-                  </button>
+                  <input
+                    type="text"
+                    id="name"
+                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                    placeholder="Request"
+                    required
+                    value={requests()[props.currentId]?.name}
+                    onChange={(e: Event) => changeRequest(e, "name", undefined)}
+                  />
                 </div>
 
-                <Show
-                  when={requests().length>0 && requests()[props.currentId].request.headers && requests()[props.currentId].request.headers.length > 0}
-                  fallback="No headers"
-                >
-                  <For each={requests()[props.currentId].request.headers}>
-                    {(header, i) => {
-                      return (
-                        <div class="grid gap-6 mb-6 md:grid-cols-3">
-                          <div>
-                            <label
-                              for="key"
-                              class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                            >
-                              Key
-                            </label>
-                            <input
-                              type="text"
-                              id="key"
-                              class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                              placeholder="Enter Key"
-                              required
-                              value={header.key}
-							  onChange={(e:Event) => changeRequest(e, "key", i())}
-                            />
-                          </div>
-                          <div>
-                            <label
-                              for="value"
-                              class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                            >
-                              Value
-                            </label>
-                            <input
-                              type="text"
-                              id="value"
-                              class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                              placeholder="Enter value"
-                              required
-                              value={header.value}
-							  onChange={(e:Event) => changeRequest(e, "value", i())}
-                            />
-                          </div>
-                          <div>
-                            <button onClick={(e: Event) => reqDeleteHeader(e)}>
-                              <DelIcon />
-                            </button>
-							{showDelAlert() && <DeleteAlert toDelete={i()} onChoose={getChoice} body={{
-								topic: "Delete Header",
-								message: "Are you sure you want to delete this header? This action cannot be undone.",
-								confirmOption: "Delete",
-								rejectionOption: "Cancel"
-							}} />}
-                          </div>
-                        </div>
-                      );
-                    }}
-                  </For>
-                </Show>
-              </div>
+                <div class="mb-4 mt-2">
+                  <label
+                    for="url"
+                    class="block mb-2 text-lg font-medium text-black-900 dark:text-white"
+                  >
+                    URL
+                  </label>
+                  <input
+                    type="text"
+                    id="url"
+                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                    placeholder="URL"
+                    required
+                    value={requests()[props.currentId]?.request.url}
+                    onChange={(e: Event) => changeRequest(e, "url", undefined)}
+                  />
+                </div>
 
-              <div class="mb-4 mt-2">
-                <label
-                  for="methods"
-                  class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                >
-                  Method
-                </label>
-                <select
-                  id="methods"
-                  class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-				  onChange={(e:Event) => changeRequest(e, "method", undefined)}
-                >
-                  <For each={methods()}>
-                    {(method) => {
-                      if (
-                        method === requests()[props.currentId].request.method
-                      ) {
+                <div class="mt-6 mb-4">
+                  <div class="flex justify-between items-center">
+                    <label
+                      for="first_name"
+                      class="block mb-2 text-lg font-medium text-gray-900 dark:text-white"
+                    >
+                      Headers
+                    </label>
+
+                    <button onClick={addHeaders}>
+                      <AddIcon />
+                    </button>
+                  </div>
+
+                  <Show
+                    when={
+                      requests().length > 0 &&
+                      requests()[props.currentId]?.request.headers &&
+                      requests()[props.currentId]?.request.headers.length > 0
+                    }
+                    fallback="No headers"
+                  >
+                    <For each={requests()[props.currentId]?.request.headers}>
+                      {(header, i) => {
                         return (
-                          <option selected value={method}>
-                            {method}
-                          </option>
+                          <div class="grid gap-6 mb-6 md:grid-cols-3">
+                            <div>
+                              <label
+                                for="key"
+                                class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                              >
+                                Key
+                              </label>
+                              <input
+                                type="text"
+                                id="key"
+                                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                placeholder="Enter Key"
+                                required
+                                value={header.key}
+                                onChange={(e: Event) =>
+                                  changeRequest(e, "key", i())
+                                }
+                              />
+                            </div>
+                            <div>
+                              <label
+                                for="value"
+                                class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                              >
+                                Value
+                              </label>
+                              <input
+                                type="text"
+                                id="value"
+                                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                placeholder="Enter value"
+                                required
+                                value={header.value}
+                                onChange={(e: Event) =>
+                                  changeRequest(e, "value", i())
+                                }
+                              />
+                            </div>
+                            <div>
+                              <button
+                                onClick={(e: Event) => reqDeleteHeader(e)}
+                              >
+                                <DelIcon />
+                              </button>
+                              {showDelAlert() && (
+                                <DeleteAlert
+                                  toDelete={i()}
+                                  onChoose={getChoice}
+                                  body={{
+                                    topic: "Delete Header",
+                                    message:
+                                      "Are you sure you want to delete this header? This action cannot be undone.",
+                                    confirmOption: "Delete",
+                                    rejectionOption: "Cancel",
+                                  }}
+                                />
+                              )}
+                            </div>
+                          </div>
                         );
+                      }}
+                    </For>
+                  </Show>
+                </div>
+
+                <div class="mb-4 mt-2">
+                  <label
+                    for="methods"
+                    class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                  >
+                    Method
+                  </label>
+                  <select
+                    id="methods"
+                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                    onChange={(e: Event) =>
+                      changeRequest(e, "method", undefined)
+                    }
+                  >
+                    <For each={methods()}>
+                      {(method) => {
+                        if (
+                          method === requests()[props.currentId]?.request.method
+                        ) {
+                          return (
+                            <option selected value={method}>
+                              {method}
+                            </option>
+                          );
+                        }
+
+                        return <option value={method}>{method}</option>;
+                      }}
+                    </For>
+                  </select>
+                </div>
+
+                {requests()[props.currentId]?.request.method ===
+                  methods()[1] && (
+                  <div class="mb-4 mt-2">
+                    <label
+                      for="body"
+                      class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                    >
+                      Body
+                    </label>
+                    <textarea
+                      id="body"
+                      rows="4"
+                      class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                      placeholder="Body"
+                      value={
+                        requests()[props.currentId]?.request.body === undefined
+                          ? ""
+                          : requests()[props.currentId]?.request.body
                       }
-
-                      return <option value={method}>{method}</option>;
-                    }}
-                  </For>
-                </select>
-              </div>
-
-              {requests()[props.currentId].request.method === methods()[1] && <div class="mb-4 mt-2">
-                <label
-                  for="body"
-                  class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                >
-                  Body
-                </label>
-                <textarea
-                  id="body"
-                  rows="4"
-                  class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                  placeholder="Body"
-				  value={requests()[props.currentId].request.body === undefined ? "" : requests()[props.currentId].request.body}
-				  onChange={(e:Event) => changeRequest(e, "body", undefined)}
-                />
-              </div>}
-            </form>
+                      onChange={(e: Event) =>
+                        changeRequest(e, "body", undefined)
+                      }
+                    />
+                  </div>
+                )}
+              </form>
+            </Show>
           </div>
         </div>
       </section>
