@@ -1,11 +1,10 @@
 import { createSignal } from "solid-js";
-import { IRestRequest } from "./interfaces/rest.requests";
+import { IRestRequest, IRestResponse } from "./interfaces/rest.requests";
 
 const [requests, setRequests] = createSignal<IRestRequest[]>([
   {
     id: "1",
     name: "Get Sample",
-    desc: "https://jsonplaceholder.com/posts",
     request: {
       method: "GET",
       url: "https://jsonplaceholder.com/posts",
@@ -14,7 +13,6 @@ const [requests, setRequests] = createSignal<IRestRequest[]>([
   {
     id: "2",
     name: "Get Sample 2",
-    desc: "https://jsonplaceholder.com/posts",
     request: {
       method: "POST",
       url: "https://jsonplaceholder.com/posts",
@@ -26,8 +24,54 @@ const [requests, setRequests] = createSignal<IRestRequest[]>([
   },
 ]);
 
+const [responses, setResponses] = createSignal<IRestResponse[]>([
+  {
+    id: "1",
+    request_id: "1",
+    response: {
+      data: {
+        userId: 1,
+        id: 1,
+        title:
+          "sunt aut facere repellat provident occaecati excepturi optio reprehenderit",
+      },
+      status: 200,
+      headers: {
+        "content-type": "application/json; charset=utf-8",
+        "x-powered-by": "Express",
+      },
+    },
+  },
+  {
+    id: "2",
+    request_id: "2",
+    response: {
+      data: {
+        userId: 2,
+        id: 2,
+        title: "lorem ipsum dolor sit amet consectetur adipisicing elit",
+      },
+      status: 200,
+      headers: {
+        "content-type": "application/json; charset=utf-8",
+        "x-powered-by": "Express",
+      },
+    },
+  },
+]);
+
 const [selected, setSelected] = createSignal<number>(0);
 const [methods] = createSignal<string[]>(["GET", "POST", "PUT", "DELETE"]);
 const [currentId, setCurrentId] = createSignal<number>(0);
 
-export { requests, setRequests, setSelected, selected, methods, currentId, setCurrentId };
+export {
+  requests,
+  setRequests,
+  setSelected,
+  selected,
+  methods,
+  currentId,
+  setCurrentId,
+  responses,
+  setResponses,
+};

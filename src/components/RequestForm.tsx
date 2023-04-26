@@ -109,17 +109,34 @@ const RequestForm: Component<RequestFormProps> = (props) => {
     );
   };
 
+  const sendRequest = (e: Event): void => {
+    e.preventDefault();
+    alert(requests()[props.currentId]?.request);
+  };
+
   createEffect(() => {
     console.log(requests());
+    localStorage.setItem("requests", JSON.stringify(requests()));
   });
 
   return (
-    <div class="w-full h-full p-2 flex flex-wrap justify-between items-center">
-      <section class="w-1/2 h-full p-3">
-        <div class="w-full h-full bg-neutral-300 rounded-lg shadow-lg p-3 overflow-auto">
-          <h1 class="text-2xl font-semibold">Request</h1>
-          <div class="flex flex-row-reverse justify-between items-center">
-            <Show when={requests()[props.currentId]?.name !== undefined} fallback="No request selected">
+    <Show
+      when={requests()[props.currentId]?.name !== undefined}
+      fallback={
+        <div class="w-full h-full px-5 py-5">
+          <div class="w-full h-full bg-neutral-300 rounded-lg shadow-lg p-3 flex justify-center items-center">
+            <p class="text-lg text-gray-700">
+              Select a request from the left panel 👈
+            </p>
+          </div>
+        </div>
+      }
+    >
+      <div class="w-full h-full p-2 flex flex-wrap justify-between items-center">
+        <section class="w-1/2 h-full p-3">
+          <div class="w-full h-full bg-neutral-300 rounded-lg shadow-lg p-3 overflow-auto">
+            <h1 class="text-2xl font-semibold">Request</h1>
+            <div class="flex flex-row-reverse justify-between items-center w-full h-9/10">
               <form class="w-full h-full p-4">
                 <div class="mb-4 mt-2">
                   <label
@@ -305,15 +322,25 @@ const RequestForm: Component<RequestFormProps> = (props) => {
                     />
                   </div>
                 )}
+
+                <div class="mb-4 mt-2">
+                  <button
+                    type="button"
+                    class="text-white bg-gradient-to-br from-purple-600 to-blue-500 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-2 mb-2"
+                    onClick={sendRequest}
+                  >
+                    Send Request
+                  </button>
+                </div>
               </form>
-            </Show>
+            </div>
           </div>
-        </div>
-      </section>
-      <section class="w-1/2 h-full p-3">
-        <div class="w-full h-full bg-neutral-300 rounded-lg shadow-lg"></div>
-      </section>
-    </div>
+        </section>
+        <section class="w-1/2 h-full p-3">
+          <div class="w-full h-full bg-neutral-300 rounded-lg shadow-lg"></div>
+        </section>
+      </div>
+    </Show>
   );
 };
 

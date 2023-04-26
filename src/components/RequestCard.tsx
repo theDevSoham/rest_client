@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable no-mixed-spaces-and-tabs */
-import { Component, createSignal } from "solid-js";
+import { Component, createEffect, createSignal } from "solid-js";
 import { IRestRequest } from "../interfaces/rest.requests";
 import { requests, selected, setRequests, setSelected } from "../states";
 import DelIcon from "../assets/svgs/DelIcon";
@@ -36,6 +36,10 @@ const RequestCard: Component<RequestCardProps> = (props) => {
     }
   };
 
+  createEffect(() => {
+    localStorage.setItem("requests", JSON.stringify(requests()));
+  });
+
   return (
     <div
       class="w-full h-14 my-5 rounded-lg py-1 px-3 select-none cursor-pointer relative"
@@ -62,7 +66,7 @@ const RequestCard: Component<RequestCardProps> = (props) => {
           "text-neutral-100": selected() === props.ind,
         }}
       >
-        {props.request.request.method}: {props.request.desc}
+        {props.request.request.method}: {props.request.request.url}
       </p>
 
       <div class="absolute right-0 bottom-0 w-10 h-full flex justify-center items-center z-10">

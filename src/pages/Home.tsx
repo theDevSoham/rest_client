@@ -1,7 +1,7 @@
-import { Component, createEffect, onMount } from "solid-js";
+import { Component, createEffect } from "solid-js";
 import SideNav from "../components/SideNav";
 import RequestForm from "../components/RequestForm";
-import { currentId, requests, setCurrentId, setRequests } from "../states";
+import { currentId, setCurrentId, setRequests, setResponses } from "../states";
 
 const Home: Component<{}> = () => {
 
@@ -9,14 +9,14 @@ const Home: Component<{}> = () => {
     setCurrentId(id);
   };
 
-  onMount(() => {
+  createEffect(() => {
     if(localStorage.getItem("requests")) {
       setRequests(JSON.parse(localStorage.getItem("requests")!));
     }
-  });
 
-  createEffect(() => {
-    localStorage.setItem("requests", JSON.stringify(requests(), null, 2));
+    if(localStorage.getItem("responses")) {
+      setResponses(JSON.parse(localStorage.getItem("responses")!));
+    }
   });
 
   return (

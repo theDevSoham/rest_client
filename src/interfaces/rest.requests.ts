@@ -10,14 +10,19 @@ interface IRequest{
 interface IRestRequest{
 	id: string;
 	name: string;
-	desc: string;
 	request: IRequest;
 }
 
-interface IRestResponse{
+interface IResponse{
 	data: any;
 	status: number;
 	headers: any;
+}
+
+interface IRestResponse{
+	id: string;
+	request_id: string;
+	response: IResponse;
 }
 
 export type { IRestRequest, IRestResponse }

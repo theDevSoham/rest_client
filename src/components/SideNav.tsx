@@ -1,9 +1,9 @@
 /* eslint-disable no-unused-vars */
-import { Component, For } from "solid-js";
+import { Component, For, createEffect } from "solid-js";
 import RequestCard from "./RequestCard";
-import { requests, setRequests } from "../states";
+import { requests, responses, setRequests, setResponses } from "../states";
 import AddIcon from "../assets/svgs/AddIcon";
-import { IRestRequest } from "../interfaces/rest.requests";
+import { IRestRequest, IRestResponse } from "../interfaces/rest.requests";
 
 type SideNavProps = {
   onFocused: (index: number) => void;
@@ -15,23 +15,48 @@ const SideNav: Component<SideNavProps> = (props) => {
     props.onFocused(index);
   };
 
+  const generateRandID = ():string => {
+    return Date.now().toString(36) + Math.random().toString(36).substr(2);
+  };
+
   const addRequest = () => {
+
+    const newID = generateRandID();
+
     setRequests((prev) => {
 
       const newRequest:IRestRequest = {
-        id: `${prev.length + 1}`,
+        id: `${newID}`,
         name: "New Request",
-        desc: "New Request",
         request: {
           method: "GET",
-          url: "",
+          url: "https://jsonplaceholder.typicode.com/todos/1",
           headers: [],
           body: "",
         }
       }
       return [...prev, newRequest];
     });
+
+    setResponses((prev) => {
+
+      const newResponse:IRestResponse = {
+        id: `${generateRandID()}`,
+        request_id: `${newID}`,
+        response: {
+          status: 200,
+          headers: [],
+          data: "",
+        },
+      }
+      return [...prev, newResponse];
+    });
   };
+
+  createEffect(() => {
+    localStorage.setItem("requests", JSON.stringify(requests()));
+    localStorage.setItem("responses", JSON.stringify(responses()));
+  });
 
   return (
     <section class="w-4/5 h-4/5 rounded-2xl bg-gradient-to-tr from-slate-300 to-green-100 px-5 overflow-auto">
