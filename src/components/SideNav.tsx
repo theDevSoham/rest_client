@@ -1,8 +1,8 @@
 /* eslint-disable no-unused-vars */
-import { Component, For, createEffect } from "solid-js";
-import RequestCard from "./RequestCard";
+import { Component, For, createEffect, lazy } from "solid-js";
+const RequestCard = lazy(() => import("../components/RequestCard"));
+const AddIcon = lazy(() => import("../assets/svgs/AddIcon"));
 import { requests, responses, setRequests, setResponses } from "../states";
-import AddIcon from "../assets/svgs/AddIcon";
 import { IRestRequest, IRestResponse } from "../interfaces/rest.requests";
 
 type SideNavProps = {

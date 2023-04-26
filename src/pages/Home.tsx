@@ -1,6 +1,7 @@
-import { Component, createEffect } from "solid-js";
-import SideNav from "../components/SideNav";
-import RequestForm from "../components/RequestForm";
+import type { Component } from "solid-js";
+import { createEffect, lazy } from "solid-js";
+const SideNav = lazy(() => import("../components/SideNav"));
+const RequestResponseForm = lazy(() => import("../components/RequestResponseForm"));
 import { currentId, setCurrentId, setRequests, setResponses } from "../states";
 
 const Home: Component<{}> = () => {
@@ -26,7 +27,7 @@ const Home: Component<{}> = () => {
           <SideNav onFocused={getId}/>
         </section>
         <section class="w-3/4 h-full overflow-auto">
-          <RequestForm currentId={currentId()} />
+          <RequestResponseForm currentId={currentId()} />
         </section>
       </div>
     </main>

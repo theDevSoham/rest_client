@@ -2,7 +2,7 @@
 /* eslint-disable no-mixed-spaces-and-tabs */
 import { Component, createEffect, createSignal } from "solid-js";
 import { IRestRequest } from "../interfaces/rest.requests";
-import { requests, selected, setRequests, setSelected } from "../states";
+import { requests, responses, selected, setRequests, setResponses, setSelected } from "../states";
 import DelIcon from "../assets/svgs/DelIcon";
 import DeleteAlert from "../pages/DeleteAlert";
 
@@ -27,6 +27,11 @@ const RequestCard: Component<RequestCardProps> = (props) => {
   const deleteRequest = (prompt: boolean, index: number) => {
     setToggleDelete(false);
     if (prompt && requests().length > 1) {
+
+      setResponses((prev) => {
+        return prev.filter((res) => res.request_id !== requests()[index].id);
+      });
+
       setRequests((prev) => {
         return prev.filter((_, i) => i !== index);
       });
@@ -38,6 +43,7 @@ const RequestCard: Component<RequestCardProps> = (props) => {
 
   createEffect(() => {
     localStorage.setItem("requests", JSON.stringify(requests()));
+    localStorage.setItem("responses", JSON.stringify(responses()));
   });
 
   return (
