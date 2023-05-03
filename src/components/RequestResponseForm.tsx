@@ -21,8 +21,8 @@ const AddIcon = lazy(() => import("../assets/svgs/AddIcon"));
 const DelIcon = lazy(() => import("../assets/svgs/DelIcon"));
 const DeleteAlert = lazy(() => import("../pages/DeleteAlert"));
 const ResponseForm = lazy(() => import("./ResponseForm"));
-import axios from "axios";
 import Loader from "./Loader";
+import { axiosInstance } from "..";
 
 type RequestFormProps = {
   currentId: number;
@@ -148,7 +148,7 @@ const RequestForm: Component<RequestFormProps> = (props) => {
 
     if (validateData()) {
       setIsLoading(true);
-      axios({
+      axiosInstance({
         method: currentRequest()?.request?.method,
         url: currentRequest()?.request?.url,
         headers: currentRequest()?.request?.headers?.reduce(
@@ -167,6 +167,8 @@ const RequestForm: Component<RequestFormProps> = (props) => {
               if (resp.request_id === currentRequest()?.id) {
                 return {
                   ...resp,
+                  duration: response.duration,
+                  size: JSON.stringify(response.data).length + JSON.stringify(response.headers).length,
                   response: {
                     ...resp.response,
                     headers: response.headers,
@@ -188,6 +190,8 @@ const RequestForm: Component<RequestFormProps> = (props) => {
                 if (resp.request_id === currentRequest()?.id) {
                   return {
                     ...resp,
+                    duration: err.response.duration,
+                    size: 0,
                     response: {
                       ...resp.response,
                       headers: err.response.headers,

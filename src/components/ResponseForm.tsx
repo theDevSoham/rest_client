@@ -1,6 +1,7 @@
 import { Component, For, Show, createEffect, createSignal } from "solid-js";
 import { IRestRequest, IRestResponse } from "../interfaces/rest.requests";
 import { responses } from "../states";
+import prettyBytes from "pretty-bytes";
 
 type ResponseFormProps = {
   currentId: IRestRequest["id"];
@@ -9,6 +10,8 @@ type ResponseFormProps = {
 const staticResponse: IRestResponse = {
   id: "none",
   request_id: "none",
+  duration: 0,
+  size: 0,
   response: {
     status: 400,
     headers: [],
@@ -33,7 +36,13 @@ const ResponseForm: Component<ResponseFormProps> = (props) => {
 
   return (
     <div class="w-full h-full bg-neutral-300 rounded-lg shadow-lg p-3 overflow-auto">
-      <h1 class="text-2xl font-semibold">Response</h1>
+      <div class="flex justify-between items-center w-full h-1/10 overflow-auto">
+        <h1 class="text-2xl font-semibold">Response</h1>
+        <span class="flex justify-between items-center">
+          <span class="text-lg text-gray-700 px-3">Time: {response()?.duration || 0}ms</span>
+          <span class="text-lg text-gray-700 px-3">Size: {prettyBytes(response()?.size || 0)}</span>
+        </span>
+      </div>
       <div class="flex flex-row-reverse justify-between items-center w-full h-9/10 overflow-auto">
         <form class="w-full h-full p-4">
           <div class="mb-4 mt-2">

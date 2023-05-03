@@ -4,6 +4,25 @@ import { render } from "solid-js/web";
 import "./index.css";
 import App from "./App";
 import { Router } from "@solidjs/router";
+import axios, { AxiosInstance } from "axios";
+
+const axiosInstance: AxiosInstance = axios.create();
+
+const updateTime = (response: any) => {
+  response.config.metadata.endTime = new Date();
+  response.duration =
+    response.config.metadata.endTime - response.config.metadata.startTime;
+  return response;
+};
+
+axiosInstance.interceptors.request.use((config) => {
+  config.metadata = { startTime: new Date() };
+  return config;
+});
+
+axiosInstance.interceptors.response.use(updateTime, e => {
+  return Promise.reject(updateTime(e.response));
+});
 
 const root = document.getElementById("root");
 
@@ -21,3 +40,5 @@ render(
   ),
   root!
 );
+
+export { axiosInstance };

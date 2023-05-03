@@ -28,6 +28,8 @@ const [responses, setResponses] = createSignal<IRestResponse[]>([
   {
     id: "1",
     request_id: "1",
+    duration: 0,
+    size: 0,
     response: {
       data: {
         userId: 1,
@@ -45,6 +47,8 @@ const [responses, setResponses] = createSignal<IRestResponse[]>([
   {
     id: "2",
     request_id: "2",
+    duration: 0,
+    size: 0,
     response: {
       data: {
         userId: 2,

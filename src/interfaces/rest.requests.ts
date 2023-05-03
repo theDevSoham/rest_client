@@ -22,6 +22,8 @@ interface IResponse{
 interface IRestResponse{
 	id: string;
 	request_id: string;
+	duration: number;
+	size: number;
 	response: IResponse;
 }
 
