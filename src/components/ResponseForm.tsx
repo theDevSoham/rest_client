@@ -77,13 +77,30 @@ const ResponseForm: Component<ResponseFormProps> = (props) => {
               disabled
             >
               <Show
-                when={response()?.response.headers.length > 0 && response()?.response.headers !== undefined}
+                when={response()?.response.headers !== undefined && response()?.response.headers.length > 0}
                 fallback={"No Headers"}
               >
                 <For each={response()?.response.headers}>
                   {(header) => `${header.key.toString()}: ${header.value.toString()}\n\n`}
                 </For>
               </Show>
+            </textarea>
+          </div>
+          <div class="mb-4 mt-2">
+            <label
+              for="body"
+              class="block mb-2 text-lg font-medium text-gray-900 dark:text-white"
+            >
+              Body
+            </label>
+            <textarea
+              id="body"
+              rows="4"
+              class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+              placeholder="Body"
+              disabled
+            >
+              {JSON.stringify(response()?.response.data, null, 2)}
             </textarea>
           </div>
         </form>

@@ -210,7 +210,7 @@ const RequestForm: Component<RequestFormProps> = (props) => {
                     response: {
                       ...resp.response,
                       headers: undefined,
-                      data: "Could not send request",
+                      data: "Error: " + err.message,
                       status: 500,
                     },
                   };
