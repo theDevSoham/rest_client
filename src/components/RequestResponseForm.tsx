@@ -22,7 +22,9 @@ const DelIcon = lazy(() => import("../assets/svgs/DelIcon"));
 const DeleteAlert = lazy(() => import("../pages/DeleteAlert"));
 const ResponseForm = lazy(() => import("./ResponseForm"));
 import Loader from "./Loader";
-import { axiosInstance } from "..";
+import { axiosInstance } from "../components/AxiosConfig/axiosConfig";
+import { source } from "./AxiosConfig/axiosConfig";
+//import axios from "axios";
 
 type RequestFormProps = {
   currentId: number;
@@ -120,10 +122,7 @@ const RequestForm: Component<RequestFormProps> = (props) => {
               method: type === "method" ? target.value : item?.request.method,
               body:
                 type === "body"
-                  ? target.value !== undefined
-                    ? ""
-                    : target.value
-                  : item?.request.body,
+                  && formatData(target.value),
               headers: item?.request.headers?.map((header, i) => {
                 if (i === id) {
                   return {
@@ -149,6 +148,7 @@ const RequestForm: Component<RequestFormProps> = (props) => {
     if (validateData()) {
       setIsLoading(true);
       axiosInstance({
+        cancelToken: source.token,
         method: currentRequest()?.request?.method,
         url: currentRequest()?.request?.url,
         headers: currentRequest()?.request?.headers?.reduce(
@@ -156,11 +156,13 @@ const RequestForm: Component<RequestFormProps> = (props) => {
             ...acc,
             [header.key]: header.value,
           }),
-          {}
+          {
+            'Access-Control-Allow-Origin': '*', // Required for CORS support to work
+          }
         ),
         data: currentRequest()?.request?.body,
       })
-        .then((response) => {
+        .then((response: any) => {
           setIsLoading(false);
           setResponses((prev) => {
             return prev.map((resp) => {
@@ -182,7 +184,7 @@ const RequestForm: Component<RequestFormProps> = (props) => {
             });
           });
         })
-        .catch((err) => {
+        .catch((err: any) => {
           setIsLoading(false);
           if (err.response) {
             setResponses((prev) => {
@@ -205,7 +207,8 @@ const RequestForm: Component<RequestFormProps> = (props) => {
               });
             });
           } else {
-            alert(err.message);
+            const message = err.message;
+            alert(message);
             setResponses((prev) => {
               return prev.map((resp) => {
                 if (resp.request_id === currentRequest()?.id) {
@@ -214,7 +217,7 @@ const RequestForm: Component<RequestFormProps> = (props) => {
                     response: {
                       ...resp.response,
                       headers: undefined,
-                      data: "Error: " + err.message,
+                      data: "Error: " + message,
                       status: 500,
                     },
                   };
@@ -489,9 +492,7 @@ const RequestForm: Component<RequestFormProps> = (props) => {
                         class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                         placeholder="Body"
                         value={
-                          currentRequest()?.request.body === undefined
-                            ? ""
-                            : formatData(currentRequest()?.request.body)
+                          currentRequest()?.request.body
                         }
                         onChange={(e: Event) =>
                           changeRequest(e, "body", undefined)

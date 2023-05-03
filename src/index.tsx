@@ -4,12 +4,7 @@ import { render } from "solid-js/web";
 import "./index.css";
 import App from "./App";
 import { Router } from "@solidjs/router";
-import axios, { AxiosInstance, CancelTokenSource } from "axios";
-
-const source: CancelTokenSource = axios.CancelToken.source();
-const axiosInstance: AxiosInstance = axios.create({
-  cancelToken: source.token,
-});
+import { axiosInstance } from "./components/AxiosConfig/axiosConfig";
 
 const updateTime = (response: any) => {
   response.config.metadata.endTime = new Date();
@@ -18,7 +13,7 @@ const updateTime = (response: any) => {
   return response;
 };
 
-axiosInstance.interceptors.request.use((config) => {
+axiosInstance.interceptors.request.use((config: any) => {
   config.metadata = { startTime: new Date() };
   return config;
 });
@@ -43,5 +38,3 @@ render(
   ),
   root!
 );
-
-export { axiosInstance, source as cancelSource };
