@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-vars */
-import { Component, For, createEffect, lazy } from "solid-js";
+import { Component, For, Show, createEffect, lazy } from "solid-js";
 const RequestCard = lazy(() => import("../components/RequestCard"));
 const AddIcon = lazy(() => import("../assets/svgs/AddIcon"));
 import { requests, responses, setRequests, setResponses } from "../states";
@@ -45,7 +45,16 @@ const SideNav: Component<SideNavProps> = (props) => {
         request_id: `${newID}`,
         response: {
           status: 200,
-          headers: [],
+          headers: [
+            {
+              key: "Content-Type",
+              value: "application/json; charset=utf-8",
+            },
+            {
+              key: "X-Powered-By",
+              value: "Express",
+            }
+          ],
           data: "",
         },
       }
@@ -67,9 +76,15 @@ const SideNav: Component<SideNavProps> = (props) => {
         </button>
       </div>
 
-      <For each={requests()}>
-        {(item, i) => <RequestCard request={item} ind={i()} onFocused={getCurrentIndex}/>}
-      </For>
+      <Show when={requests().length > 0} fallback={
+        <div class="w-full h-1/10 flex justify-center items-center">
+          <h2 class="text-center text-lg text-gray-700">No Requests found. Please add a request</h2>
+        </div>
+      }>
+        <For each={requests()}>
+          {(item, i) => <RequestCard request={item} ind={i()} onFocused={getCurrentIndex}/>}
+        </For>
+      </Show>
     </section>
   );
 };

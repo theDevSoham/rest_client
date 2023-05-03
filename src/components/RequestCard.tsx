@@ -26,7 +26,7 @@ const RequestCard: Component<RequestCardProps> = (props) => {
 
   const deleteRequest = (prompt: boolean, index: number) => {
     setToggleDelete(false);
-    if (prompt && requests().length > 1) {
+    if (prompt) {
 
       setResponses((prev) => {
         return prev.filter((res) => res.request_id !== requests()[index].id);
@@ -35,8 +35,7 @@ const RequestCard: Component<RequestCardProps> = (props) => {
       setRequests((prev) => {
         return prev.filter((_, i) => i !== index);
       });
-    } else {
-      alert("You can't delete the last request");
+    }else{
       return;
     }
   };
