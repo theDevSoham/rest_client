@@ -31,7 +31,7 @@ const SideNav: Component<SideNavProps> = (props) => {
         request: {
           method: "GET",
           url: "https://jsonplaceholder.typicode.com/todos/1",
-          headers: [],
+          headers: undefined,
           body: "",
         }
       }

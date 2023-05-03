@@ -63,6 +63,7 @@ const [responses, setResponses] = createSignal<IRestResponse[]>([
 const [selected, setSelected] = createSignal<number>(0);
 const [methods] = createSignal<string[]>(["GET", "POST", "PUT", "DELETE"]);
 const [currentId, setCurrentId] = createSignal<number>(0);
+const [isLoading, setIsLoading] = createSignal<boolean>(false);
 
 export {
   requests,
@@ -74,4 +75,6 @@ export {
   setCurrentId,
   responses,
   setResponses,
+  isLoading,
+  setIsLoading,
 };

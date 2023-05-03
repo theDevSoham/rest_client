@@ -77,11 +77,11 @@ const ResponseForm: Component<ResponseFormProps> = (props) => {
               disabled
             >
               <Show
-                when={response()?.response.headers.length > 0}
-                fallback={<h1 class="text-lg text-gray-700">No Headers</h1>}
+                when={response()?.response.headers.length > 0 && response()?.response.headers !== undefined}
+                fallback={"No Headers"}
               >
                 <For each={response()?.response.headers}>
-                  {(header) => `${header.key}: ${header.value}\n\n`}
+                  {(header) => `${header.key.toString()}: ${header.value.toString()}\n\n`}
                 </For>
               </Show>
             </textarea>
